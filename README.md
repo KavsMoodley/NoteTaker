@@ -2,8 +2,6 @@
 
 A fast, local note-taking desktop app. Notes are stored as plain Markdown files on your machine — no account, no cloud, no tracking.
 
-![NoteTaker screenshot](docs/screenshot.png)
-
 ## Features
 
 - Local Markdown notes with folders, tags, and pinning
