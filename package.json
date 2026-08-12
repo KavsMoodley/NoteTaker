@@ -1,0 +1,9 @@
+{
+  "name": "notetaker",
+  "version": "1.0.2",
+  "description": "A fast, local note-taking desktop app",
+  "main": "main.js",
+  "author": "NoteTaker",
+  "license": "MIT",
+  "type": "commonjs"
+}
