@@ -8,49 +8,14 @@
 </head>
 <body>
   <div id="app">
-    <nav id="activity-bar" aria-label="Sections">
-      <button class="ab-btn active" data-view="notes" data-tip="Notes — Ctrl+1" aria-label="Notes (Ctrl+1)" aria-pressed="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-          <line x1="16" y1="13" x2="8" y2="13" />
-          <line x1="16" y1="17" x2="8" y2="17" />
-        </svg>
-      </button>
-      <button class="ab-btn" data-view="search" data-tip="Search notes — Ctrl+2" aria-label="Search notes (Ctrl+2)" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-      </button>
-      <button class="ab-btn" data-view="pinned" data-tip="Pinned notes — Ctrl+3" aria-label="Pinned notes (Ctrl+3)" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="12" y1="17" x2="12" y2="22" />
-          <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
-        </svg>
-      </button>
-      <button class="ab-btn" data-view="palette" data-tip="Palette &amp; settings — Ctrl+4" aria-label="Palette and settings (Ctrl+4)" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08" />
-          <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z" />
-        </svg>
-      </button>
-      <button class="ab-btn" id="ai-toggle" data-tip="AI assistant — Ctrl+Shift+A" aria-label="AI assistant (Ctrl+Shift+A)" aria-pressed="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 8V4H8" />
-          <rect width="16" height="12" x="4" y="8" rx="2" />
-          <path d="M2 14h2" />
-          <path d="M20 14h2" />
-          <path d="M15 13v2" />
-          <path d="M9 13v2" />
-        </svg>
-      </button>
-      <button class="ab-btn ab-toggle" id="sidebar-toggle" data-tip="Hide / show sidebar — Ctrl+Shift+B" aria-label="Hide or show sidebar (Ctrl+Shift+B)">
-        <svg class="ab-tip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect width="18" height="18" x="3" y="3" rx="2" />
-          <path d="M9 3v18" />
-        </svg>
-        <span class="ab-tip-label">Hide</span>
+    <nav id="activity-bar" title="Sections">
+      <button class="ab-btn active" data-view="notes" data-tip="Notes — Ctrl+1" title="Notes (Ctrl+1)">📄</button>
+      <button class="ab-btn" data-view="search" data-tip="Search notes — Ctrl+2" title="Search (Ctrl+2)">🔍</button>
+      <button class="ab-btn" data-view="pinned" data-tip="Pinned notes — Ctrl+3" title="Pinned (Ctrl+3)">📌</button>
+      <button class="ab-btn" data-view="palette" data-tip="Palette &amp; settings — Ctrl+4" title="Palette &amp; settings (Ctrl+4)">🎨</button>
+      <button class="ab-btn" id="ai-toggle" data-tip="AI assistant — Ctrl+Shift+A" title="AI assistant (Ctrl+Shift+A)">🤖</button>
+      <button class="ab-btn ab-toggle" id="sidebar-toggle" data-tip="Hide / show sidebar — Ctrl+Shift+B" title="Toggle sidebar (Ctrl+Shift+B)">
+        <span class="ab-tip-icon">⇤</span><span class="ab-tip-label">Hide</span>
       </button>
     </nav>
 
@@ -61,7 +26,7 @@
           <span class="btn-icon">+</span> New Note
         </button>
         <div class="search-box">
-          <input id="search" type="text" placeholder="Search notes... (Ctrl+F)" aria-label="Search notes" autocomplete="off" />
+          <input id="search" type="text" placeholder="Search notes... (Ctrl+F)" autocomplete="off" />
         </div>
       </div>
 
@@ -77,27 +42,20 @@
       </div>
 
       <div class="view-head hidden" id="view-pinned-head">
-        <div class="view-head-title">Pinned</div>
+        <div class="view-head-title">📌 Pinned</div>
         <div id="pinned-count" class="view-head-sub"></div>
       </div>
 
       <div id="sidebar-nav">
         <div class="nav-group">
-          <button class="nav-item" data-filter="all" id="nav-all">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-            </svg>
-            All notes</button>
+          <button class="nav-item" data-filter="all" id="nav-all">📄 All notes</button>
         </div>
         <div class="nav-section-head">
           <span class="nav-divider">Folders</span>
           <button id="folder-add-btn" class="nav-add-btn" title="New folder">＋</button>
         </div>
         <div id="folder-new-row" class="nav-new-row hidden">
-          <input id="folder-new-input" type="text" placeholder="Folder name, press Enter" aria-label="New folder name" maxlength="30" />
+          <input id="folder-new-input" type="text" placeholder="Folder name, press Enter" maxlength="30" />
         </div>
         <div id="folder-nav"></div>
         <div class="nav-section-head" id="tags-divider" hidden>
@@ -115,24 +73,8 @@
           <div class="palette-section">
             <h3>Theme</h3>
             <div class="theme-switch">
-              <button id="theme-dark" class="theme-option" title="Dark mode" aria-label="Dark mode" aria-pressed="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              </button>
-              <button id="theme-light" class="theme-option" title="Light mode" aria-label="Light mode" aria-pressed="false">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-              </button>
+              <button id="theme-dark" class="theme-option" title="Dark mode">🌙</button>
+              <button id="theme-light" class="theme-option" title="Light mode">☀️</button>
               <div id="theme-indicator" class="theme-indicator"></div>
             </div>
           </div>
@@ -140,31 +82,30 @@
           <div class="palette-section">
             <h3>Accent color</h3>
             <div class="swatches">
-              <button class="swatch" data-color="#6c5ce7" title="Purple" aria-label="Purple accent" style="--sw:#6c5ce7"></button>
-              <button class="swatch" data-color="#0ea5e9" title="Sky blue" aria-label="Sky blue accent" style="--sw:#0ea5e9"></button>
-              <button class="swatch" data-color="#10b981" title="Emerald" aria-label="Emerald accent" style="--sw:#10b981"></button>
-              <button class="swatch" data-color="#f59e0b" title="Amber" aria-label="Amber accent" style="--sw:#f59e0b"></button>
-              <button class="swatch" data-color="#ef4444" title="Red" aria-label="Red accent" style="--sw:#ef4444"></button>
-              <button class="swatch" data-color="#ec4899" title="Pink" aria-label="Pink accent" style="--sw:#ec4899"></button>
-              <input type="color" id="custom-color" title="Custom color" aria-label="Custom accent color" />
+              <button class="swatch" data-color="#6c5ce7" title="Purple" style="--sw:#6c5ce7"></button>
+              <button class="swatch" data-color="#0ea5e9" title="Sky blue" style="--sw:#0ea5e9"></button>
+              <button class="swatch" data-color="#10b981" title="Emerald" style="--sw:#10b981"></button>
+              <button class="swatch" data-color="#f59e0b" title="Amber" style="--sw:#f59e0b"></button>
+              <button class="swatch" data-color="#ef4444" title="Red" style="--sw:#ef4444"></button>
+              <button class="swatch" data-color="#ec4899" title="Pink" style="--sw:#ec4899"></button>
+              <input type="color" id="custom-color" title="Custom color" />
             </div>
           </div>
 
           <div class="palette-section">
             <h3>Background</h3>
             <div class="bg-options">
-              <button class="bg-option" data-bg="gradient" id="bg-gradient" title="Gradient" aria-pressed="true">Gradient</button>
-              <button class="bg-option" data-bg="plain" id="bg-plain" title="Plain" aria-pressed="false">Plain</button>
+              <button class="bg-option" data-bg="gradient" id="bg-gradient" title="Gradient">Gradient</button>
+              <button class="bg-option" data-bg="plain" id="bg-plain" title="Plain">Plain</button>
             </div>
           </div>
 
           <div class="palette-section">
             <h3>Font size</h3>
             <div class="font-size-row">
-              <button id="font-minus" class="btn btn-ghost" aria-label="Decrease font size">A−</button>
-              <input type="range" id="font-size" min="12" max="22" step="1" value="15" aria-label="Editor font size" />
-              <button id="font-plus" class="btn btn-ghost" aria-label="Increase font size">A+</button>
-              <span id="font-size-value" class="view-head-sub">15px</span>
+              <button id="font-minus" class="btn btn-ghost">A−</button>
+              <input type="range" id="font-size" min="12" max="22" step="1" value="15" />
+              <button id="font-plus" class="btn btn-ghost">A+</button>
             </div>
           </div>
 
@@ -218,54 +159,36 @@
         <div class="empty-art">
           <span class="empty-blob blob-1"></span>
           <span class="empty-blob blob-2"></span>
-          <div class="empty-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-            </svg>
-          </div>
+          <div class="empty-icon">📝</div>
         </div>
         <h2>Welcome to NoteTaker</h2>
         <p>Capture your thoughts. Notes are saved automatically as you type —<br />Markdown supported.</p>
         <button id="welcome-create" class="btn btn-primary empty-cta">
           <span class="btn-icon">+</span> Create your first note
         </button>
-        <p class="empty-hint">Press <kbd>Ctrl</kbd>+<kbd>N</kbd> anytime for a new note · Customize the look in Palette</p>
+        <p class="empty-hint">Press <kbd>Ctrl</kbd>+<kbd>N</kbd> anytime for a new note · 🎨 Palette restyles the app</p>
       </div>
 
       <div id="editor-area" class="hidden">
         <header id="editor-header">
           <input id="note-title" type="text" placeholder="Note title" autocomplete="off" />
           <div class="editor-actions">
-            <div class="seg" id="mode-seg" title="View mode (Ctrl+P)" role="group" aria-label="View mode">
+            <div class="seg" id="mode-seg" title="View mode (Ctrl+P)">
               <div class="seg-thumb" id="seg-thumb"></div>
-              <button class="seg-btn" data-mode="editor" aria-pressed="false">Editor</button>
-              <button class="seg-btn active" data-mode="split" aria-pressed="true">Split</button>
-              <button class="seg-btn" data-mode="preview" aria-pressed="false">Preview</button>
+              <button class="seg-btn" data-mode="editor">Editor</button>
+              <button class="seg-btn active" data-mode="split">Split</button>
+              <button class="seg-btn" data-mode="preview">Preview</button>
             </div>
             <div class="editor-actions-extra">
-              <button id="pin-btn" class="btn btn-ghost icon-btn" title="Pin note" aria-label="Pin note" aria-pressed="false"></button>
+              <button id="pin-btn" class="btn btn-ghost icon-btn" title="Pin note">📌</button>
               <button id="export-btn" class="btn btn-ghost" title="Export note">Export ▾</button>
-              <button id="delete-btn" class="btn btn-danger icon-btn" title="Delete note" aria-label="Delete note">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  <line x1="10" y1="11" x2="10" y2="17" />
-                  <line x1="14" y1="11" x2="14" y2="17" />
-                </svg>
-              </button>
+              <button id="delete-btn" class="btn btn-danger icon-btn" title="Delete note">🗑</button>
             </div>
           </div>
         </header>
         <div id="editor-subbar">
           <div class="subbar-field">
-            <span class="subbar-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-            </svg>
-          </span>
+            <span class="subbar-icon">📁</span>
             <select id="folder-select" title="Folder"></select>
           </div>
           <div class="subbar-field subbar-field-tags">
@@ -292,30 +215,21 @@
 
     <aside id="ai-panel">
       <div class="ai-head">
-        <h2>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 8V4H8" />
-            <rect width="16" height="12" x="4" y="8" rx="2" />
-            <path d="M2 14h2" />
-            <path d="M20 14h2" />
-            <path d="M15 13v2" />
-            <path d="M9 13v2" />
-          </svg>
-          Assistant
-        </h2>
+        <h2>🤖 Assistant</h2>
         <span class="ai-head-sub">Gemini · free tier</span>
         <button id="ai-close" class="btn btn-ghost icon-btn" title="Close (Esc)">✕</button>
       </div>
       <div id="ai-chat" class="ai-chat"></div>
       <div class="ai-input-row">
-        <textarea id="ai-input" rows="2" placeholder="Ask a follow-up… (Ctrl+Enter to send)" aria-label="Ask a question" autocomplete="off"></textarea>
+        <textarea id="ai-input" rows="2" placeholder="Ask a follow-up… (Ctrl+Enter to send)" autocomplete="off"></textarea>
         <button id="ai-send" class="btn btn-primary" title="Send (Ctrl+Enter)">Ask</button>
       </div>
     </aside>
   </div>
 
-  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  <div id="toast" class="toast hidden"></div>
 
+  <script src="../shared/markdown.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

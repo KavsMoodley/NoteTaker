@@ -3,14 +3,40 @@
   "version": "1.0.2",
   "description": "A fast, local note-taking desktop app",
   "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/markdown.test.js",
+    "dist": "electron-builder --win nsis"
+  },
+  "keywords": [
+    "notes",
+    "electron",
+    "notetaker"
+  ],
   "author": "NoteTaker",
   "license": "MIT",
   "type": "commonjs",
-  "scripts": {
-    "start": "electron ."
-  },
   "devDependencies": {
-    "@electron/packager": "^20.3.0",
-    "electron": "^43.4.0"
+    "electron": "^43.3.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.notetaker.app",
+    "productName": "NoteTaker",
+    "files": [
+      "main.js",
+      "preload.js",
+      "shared/**/*",
+      "renderer/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "NoteTaker"
+    }
   }
 }

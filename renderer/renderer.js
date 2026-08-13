@@ -58,7 +58,6 @@ const els = {
   folderSelect: document.getElementById('folder-select'),
   tagsInput: document.getElementById('tags-input'),
   sidebarNav: document.getElementById('sidebar-nav'),
-  sidebar: document.getElementById('sidebar'),
   folderNav: document.getElementById('folder-nav'),
   tagNav: document.getElementById('tag-nav'),
   tagsDivider: document.getElementById('tags-divider'),
@@ -93,18 +92,6 @@ const els = {
 const SIDEBAR_MIN = 200;
 const SIDEBAR_MAX = 480;
 
-const ICONS = {
-  file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
-  folder: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
-  inbox: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`,
-  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  pin: `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>`,
-  key: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`,
-  alert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
-  x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
-};
-
 function clampSidebarWidth(w) {
   const n = parseInt(w, 10);
   if (isNaN(n)) return 280;
@@ -131,10 +118,6 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-function pinIcon(pinned) {
-  return `<svg viewBox="0 0 24 24" fill="${pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>`;
-}
-
 function applySettings() {
   const s = state.settings;
   document.documentElement.dataset.theme = s.theme;
@@ -144,26 +127,18 @@ function applySettings() {
   root.setProperty('--accent-soft', hexToRgba(s.accent, 0.18));
   root.setProperty('--accent-glow', hexToRgba(s.accent, 0.45));
   root.setProperty('--sidebar-w', clampSidebarWidth(s.sidebarWidth) + 'px');
-  root.setProperty('--editor-font', s.fontSize + 'px');
   els.app.classList.toggle('sidebar-hidden', !s.panelOpen);
   els.aiKey.value = s.geminiKey || '';
   els.aiModel.value = s.geminiModel || 'gemini-3.6-flash';
+  els.noteContent.style.fontSize = s.fontSize + 'px';
   els.fontRange.value = s.fontSize;
-  const fontVal = document.getElementById('font-size-value');
-  if (fontVal) fontVal.textContent = s.fontSize + 'px';
 
   document.getElementById('theme-dark').classList.toggle('active', s.theme === 'dark');
   document.getElementById('theme-light').classList.toggle('active', s.theme === 'light');
-  document.getElementById('theme-dark').setAttribute('aria-pressed', s.theme === 'dark');
-  document.getElementById('theme-light').setAttribute('aria-pressed', s.theme === 'light');
   document.getElementById('bg-gradient').classList.toggle('active', s.bg === 'gradient');
   document.getElementById('bg-plain').classList.toggle('active', s.bg === 'plain');
-  document.getElementById('bg-gradient').setAttribute('aria-pressed', s.bg === 'gradient');
-  document.getElementById('bg-plain').setAttribute('aria-pressed', s.bg === 'plain');
   document.querySelectorAll('.swatch').forEach((sw) => {
-    const on = sw.dataset.color === s.accent;
-    sw.classList.toggle('active', on);
-    sw.setAttribute('aria-pressed', on);
+    sw.classList.toggle('active', sw.dataset.color === s.accent);
   });
 }
 
@@ -184,11 +159,7 @@ function switchView(view, opts) {
   opts = opts || {};
   state.view = view;
   setPanelOpen(true);
-  els.abBtns.forEach((b) => {
-    const on = b.dataset.view === view;
-    b.classList.toggle('active', on);
-    b.setAttribute('aria-pressed', on);
-  });
+  els.abBtns.forEach((b) => b.classList.toggle('active', b.dataset.view === view));
   els.viewNotesHead.classList.toggle('hidden', view !== 'notes');
   els.viewSearchHead.classList.toggle('hidden', view !== 'search');
   els.viewPinnedHead.classList.toggle('hidden', view !== 'pinned');
@@ -218,17 +189,7 @@ function setPanelOpen(open) {
 }
 
 function togglePanel() {
-  const hiding = state.settings.panelOpen;
-  const prev = document.activeElement;
   setPanelOpen(!state.settings.panelOpen);
-  if (!hiding) return;
-  const lostFocus = prev === null ||
-    prev === els.sidebarToggle ||
-    (prev.classList && prev.classList.contains('ab-btn')) ||
-    (els.sidebar && els.sidebar.contains(prev));
-  if (lostFocus && state.currentId) {
-    els.noteContent.focus();
-  }
 }
 
 function syncSearchInputs() {
@@ -243,7 +204,7 @@ function updateSearchCount() {
 
 function updatePinnedCount() {
   const n = state.notes.filter((x) => x.pinned).length;
-  els.pinnedCount.textContent = n === 0 ? 'Nothing pinned — pin one to keep it here' : n + ' pinned';
+  els.pinnedCount.textContent = n === 0 ? 'Nothing pinned — 📌 to keep one here' : n + ' pinned';
 }
 
 /* ---------------- AI assistant ---------------- */
@@ -268,11 +229,11 @@ function aiShowEmpty() {
   const hint = document.createElement('div');
   hint.className = 'ai-msg ai-ai';
   hint.innerHTML =
-    '<b>Welcome to the AI assistant.</b><p>Select any text in a note and press ' +
+    '<b>👋 Welcome to the AI assistant.</b><p>Select any text in a note and press ' +
     '<b>Ctrl+Shift+A</b> to look it up, or ask a question below.</p>';
   const cta = document.createElement('button');
   cta.className = 'btn btn-primary';
-  cta.innerHTML = ICONS.key + ' Add free API key';
+  cta.textContent = '🔑 Add free API key';
   cta.addEventListener('click', () => {
     switchView('palette');
     setTimeout(() => {
@@ -337,12 +298,12 @@ function aiAsk(question, selection) {
     els.aiSend.disabled = false;
     state.aiRequest = false;
     if (res.ok) {
-      loading.innerHTML = renderMarkdown(acc);
+      loading.innerHTML = window.MarkdownRenderer.renderMarkdown(acc);
       state.aiHistory.push({ role: 'user', text: q });
       state.aiHistory.push({ role: 'model', text: acc });
     } else {
       loading.className = 'ai-msg ai-err';
-      loading.innerHTML = '<span class="ai-err-icon">' + ICONS.alert + '</span> ' + escapeHtml(res.error);
+      loading.innerHTML = escapeHtml('⚠ ' + res.error);
       showToast(res.error);
     }
   };
@@ -357,22 +318,43 @@ function aiAsk(question, selection) {
 /* ---------------- View mode (#1) ---------------- */
 
 function renderPreview() {
-  let html = renderMarkdown(els.noteContent.value);
+  els.preview.innerHTML = window.MarkdownRenderer.renderMarkdown(els.noteContent.value);
+  highlightPreview();
+}
+
+function highlightPreview() {
   const q = state.query.trim();
-  if (q.length > 1) {
-    html = html.replace(new RegExp(escapeRegExp(q), 'gi'), (m) => `<mark>${m}</mark>`);
+  if (q.length < 2) return;
+  const re = new RegExp(escapeRegExp(q), 'gi');
+  const walker = document.createTreeWalker(els.preview, NodeFilter.SHOW_TEXT, null);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const parent = node.parentNode;
+    if (parent.tagName === 'MARK') continue;
+    re.lastIndex = 0;
+    if (!re.test(node.data)) continue;
+    const frag = document.createDocumentFragment();
+    let last = 0;
+    let m;
+    re.lastIndex = 0;
+    while ((m = re.exec(node.data)) !== null) {
+      if (m.index > last) frag.appendChild(document.createTextNode(node.data.slice(last, m.index)));
+      const mark = document.createElement('mark');
+      mark.textContent = node.data.slice(m.index, m.index + m[0].length);
+      frag.appendChild(mark);
+      last = m.index + m[0].length;
+      if (m.index === re.lastIndex) re.lastIndex++;
+    }
+    if (last < node.data.length) frag.appendChild(document.createTextNode(node.data.slice(last)));
+    parent.replaceChild(frag, node);
   }
-  els.preview.innerHTML = html;
 }
 
 function setMode(mode, persist) {
   state.mode = mode;
   els.editorBody.className = 'mode-' + mode;
-  els.segBtns.forEach((b) => {
-    const on = b.dataset.mode === mode;
-    b.classList.toggle('active', on);
-    b.setAttribute('aria-pressed', on);
-  });
+  els.segBtns.forEach((b) => b.classList.toggle('active', b.dataset.mode === mode));
   requestAnimationFrame(positionSegThumb);
   if (state.currentId && mode !== 'editor') renderPreview();
   updateHint();
@@ -426,14 +408,21 @@ function highlightText(text, q) {
   return esc.replace(new RegExp(escapeRegExp(q), 'gi'), (m) => `<mark>${m}</mark>`);
 }
 
+function snippet(text) {
+  const clean = (text || '')
+    .replace(/[#*_`>~\-\[\]()!]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return clean.length > 110 ? clean.slice(0, 110) + '…' : clean;
+}
+
 function navEmpty(container, icon, title, sub, btnLabel, onBtn) {
   container.innerHTML = '';
   const wrap = document.createElement('div');
   wrap.className = 'empty-list compact';
   const i = document.createElement('div');
   i.className = 'empty-list-icon';
-  if (icon && icon.indexOf('<svg') === 0) i.innerHTML = icon;
-  else i.textContent = icon || '';
+  i.textContent = icon;
   const t = document.createElement('div');
   t.className = 'empty-list-title';
   t.textContent = title;
@@ -461,7 +450,7 @@ function renderList() {
     if (filtering) {
       const icon = document.createElement('div');
       icon.className = 'empty-list-icon';
-      icon.innerHTML = ICONS.search;
+      icon.textContent = '🔍';
       const title = document.createElement('div');
       title.className = 'empty-list-title';
       title.textContent = state.query ? 'No notes found' : 'Nothing here yet';
@@ -474,7 +463,7 @@ function renderList() {
       if (state.query) {
         const clear = document.createElement('button');
         clear.className = 'btn btn-ghost btn-sm';
-        clear.innerHTML = ICONS.x + ' Clear search';
+        clear.textContent = '✕ Clear search';
         clear.addEventListener('click', () => {
           els.searchBig.value = '';
           els.search.value = '';
@@ -489,7 +478,7 @@ function renderList() {
     } else {
       const icon = document.createElement('div');
       icon.className = 'empty-list-icon';
-      icon.innerHTML = ICONS.inbox;
+      icon.textContent = '📭';
       const title = document.createElement('div');
       title.className = 'empty-list-title';
       title.textContent = 'No notes yet';
@@ -498,7 +487,7 @@ function renderList() {
       sub.textContent = 'Your note list will live here.';
       const cta = document.createElement('button');
       cta.className = 'btn btn-primary';
-      cta.innerHTML = ICONS.plus + ' Create one';
+      cta.textContent = '＋ Create one';
       cta.addEventListener('click', () => createNote(false));
       wrap.append(icon, title, sub, cta);
     }
@@ -515,8 +504,7 @@ function renderList() {
     const avatar = document.createElement('div');
     avatar.className = 'note-avatar';
     const first = (note.title || '').trim().charAt(0);
-    avatar.textContent = first ? first.toUpperCase() : '';
-    if (!first) avatar.innerHTML = ICONS.file;
+    avatar.textContent = first ? first.toUpperCase() : '📝';
 
     const meta = document.createElement('div');
     meta.className = 'note-meta';
@@ -531,17 +519,10 @@ function renderList() {
     meta.appendChild(title);
     meta.appendChild(time);
 
-    if (note.snippet) {
+    if (note.content && !q) {
       const preview = document.createElement('div');
       preview.className = 'note-preview';
-      const safe = escapeHtml(note.snippet);
-      const qq = q.toLowerCase();
-      if (qq && safe.toLowerCase().includes(qq)) {
-        const i = safe.toLowerCase().indexOf(qq);
-        preview.innerHTML = safe.slice(0, i) + `<mark>${safe.slice(i, i + q.length)}</mark>` + safe.slice(i + q.length);
-      } else {
-        preview.textContent = note.snippet;
-      }
+      preview.textContent = snippet(note.content);
       meta.appendChild(preview);
     }
 
@@ -550,7 +531,7 @@ function renderList() {
     if (note.pinned) {
       const pin = document.createElement('span');
       pin.className = 'pin-badge';
-      pin.innerHTML = ICONS.pin;
+      pin.textContent = '📌';
       item.appendChild(pin);
     }
 
@@ -572,7 +553,7 @@ function renderNav() {
   const addItem = (label, value, count, icon) => {
     const btn = document.createElement('button');
     btn.className = 'nav-item' + (state.folderFilter === value ? ' active' : '');
-    btn.innerHTML = `${icon}${escapeHtml(label)}<span class="nav-count">${count}</span>`;
+    btn.innerHTML = `${icon} ${escapeHtml(label)}<span class="nav-count">${count}</span>`;
     btn.addEventListener('click', () => {
       state.folderFilter = state.folderFilter === value ? null : value;
       renderNav();
@@ -582,14 +563,14 @@ function renderNav() {
   };
   const countIn = (name) => state.notes.filter((n) => (n.folder || '') === name).length;
   const noFolder = state.notes.filter((n) => !n.folder).length;
-  if (noFolder > 0) addItem('No folder', '', noFolder, ICONS.inbox);
+  if (noFolder > 0) addItem('No folder', '', noFolder, '🗂');
   if (state.folders.length === 0 && noFolder === 0) {
-    navEmpty(els.folderNav, ICONS.folder, 'No folders yet', 'Group notes into folders to keep your sidebar tidy.', 'Create folder', () => {
+    navEmpty(els.folderNav, '📁', 'No folders yet', 'Group notes into folders to keep your sidebar tidy.', 'Create folder', () => {
       els.folderNewRow.classList.remove('hidden');
       els.folderNewInput.focus();
     });
   } else {
-    for (const name of state.folders) addItem(name, name, countIn(name), ICONS.folder);
+    for (const name of state.folders) addItem(name, name, countIn(name), '📁');
   }
 
   els.tagsDivider.hidden = tags.size === 0;
@@ -658,10 +639,8 @@ async function selectNote(id) {
 }
 
 function updatePinButton(pinned) {
-  els.pinBtn.innerHTML = pinIcon(pinned);
+  els.pinBtn.textContent = pinned ? '📌' : '📍';
   els.pinBtn.title = pinned ? 'Unpin note' : 'Pin note';
-  els.pinBtn.setAttribute('aria-label', pinned ? 'Unpin note' : 'Pin note');
-  els.pinBtn.setAttribute('aria-pressed', pinned);
   els.pinBtn.classList.toggle('active', pinned);
 }
 
@@ -781,95 +760,6 @@ function onSearchInput() {
   }
   renderList();
   renderNav();
-}
-
-/* ---------------- Markdown ---------------- */
-
-function inlineMd(str) {
-  return str
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-}
-
-function renderMarkdown(src) {
-  const lines = src.split('\n');
-  let html = '';
-  let listType = null;
-  let pre = null;
-
-  const closePre = () => {
-    if (pre !== null) {
-      html += `</pre></code>\n`;
-      pre = null;
-    }
-  };
-  const closeList = () => {
-    if (listType) {
-      html += `</${listType}>\n`;
-      listType = null;
-    }
-  };
-
-  for (const raw of lines) {
-    const line = raw.replace(/\s+$/, '');
-
-    if (line.startsWith('```')) {
-      if (pre === null) {
-        closeList();
-        pre = line.slice(3).trim() || 'text';
-        html += `<pre><code>`;
-        continue;
-      } else {
-        closePre();
-        continue;
-      }
-    }
-    if (pre !== null) {
-      html += escapeHtml(line) + '\n';
-      continue;
-    }
-
-    const heading = line.match(/^(#{1,4})\s+(.*)/);
-    if (heading) {
-      closeList();
-      const lvl = heading[1].length;
-      html += `<h${lvl}>${inlineMd(escapeHtml(heading[2]))}</h${lvl}>\n`;
-      continue;
-    }
-    if (/^\s*([-*+]|\d+\.)\s+/.test(line)) {
-      const isOl = /^\s*\d+\./.test(line);
-      const wanted = isOl ? 'ol' : 'ul';
-      if (listType !== wanted) {
-        closeList();
-        listType = wanted;
-        html += `<${wanted}>\n`;
-      }
-      html += `<li>${inlineMd(escapeHtml(line.replace(/^\s*([-*+]|\d+\.)\s+/, '')))}</li>\n`;
-      continue;
-    }
-    closeList();
-
-    if (line.trim() === '') {
-      html += '</p>\n';
-      continue;
-    }
-    if (line.trim() === '---' || line.trim() === '***') {
-      html += '<hr>\n';
-      continue;
-    }
-    const quote = line.match(/^>\s?(.*)/);
-    if (quote) {
-      html += `<blockquote>${inlineMd(escapeHtml(quote[1]))}</blockquote>\n`;
-      continue;
-    }
-    html += `<p>${inlineMd(escapeHtml(line))}</p>\n`;
-  }
-  closePre();
-  closeList();
-  if (!html.trim()) return '<p><em>Empty note</em></p>';
-  return html;
 }
 
 /* ---------------- Toast ---------------- */
@@ -1128,11 +1018,7 @@ document.getElementById('custom-color').addEventListener('input', (e) => {
   updateSetting({ accent: e.target.value });
 });
 
-els.fontRange.addEventListener('input', (e) => {
-  const v = parseInt(e.target.value, 10);
-  document.getElementById('font-size-value').textContent = v + 'px';
-  updateSetting({ fontSize: v });
-});
+els.fontRange.addEventListener('input', (e) => updateSetting({ fontSize: parseInt(e.target.value, 10) }));
 document.getElementById('font-minus').addEventListener('click', () => {
   updateSetting({ fontSize: Math.max(12, state.settings.fontSize - 1) });
 });

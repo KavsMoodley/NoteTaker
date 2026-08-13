@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { renderMarkdown } = require('./shared/markdown.js');
 
 const errLog = path.join(app.getPath('userData'), 'renderer-errors.log');
 
@@ -16,6 +17,26 @@ ipcMain.on('renderer-error', (_event, data) => logRendererError(data));
 let notesIndex = [];
 let notesDir;
 let foldersList = [];
+let contentCache = null;
+
+function loadContentCache() {
+  if (contentCache) return;
+  const cache = new Map();
+  for (const n of notesIndex) {
+    const file = notePath(n.id);
+    try {
+      cache.set(n.id, fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '');
+    } catch (err) {
+      cache.set(n.id, '');
+    }
+  }
+  contentCache = cache;
+}
+
+function readNoteContent(id) {
+  if (!contentCache) loadContentCache();
+  return contentCache.has(id) ? contentCache.get(id) : '';
+}
 
 function notesDirEnsure() {
   notesDir = path.join(app.getPath('userData'), 'notes');
@@ -89,23 +110,7 @@ function notePath(id) {
   return path.join(notesDirEnsure(), `${id}.md`);
 }
 
-function makeSnippet(text) {
-  return (text || '')
-    .replace(/[#*_`>~\-\[\]()!]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function readonlyNote(entry) {
-  let snippet = entry.snippet || '';
-  if (!snippet) {
-    try {
-      const file = notePath(entry.id);
-      if (notesDir && fs.existsSync(file)) {
-        snippet = makeSnippet(fs.readFileSync(file, 'utf8'));
-      }
-    } catch (err) {}
-  }
   return {
     id: entry.id,
     title: entry.title,
@@ -113,7 +118,7 @@ function readonlyNote(entry) {
     folder: entry.folder || '',
     tags: entry.tags || [],
     updatedAt: entry.updatedAt,
-    snippet: snippet.slice(0, 140)
+    content: readNoteContent(entry.id).slice(0, 300)
   };
 }
 
@@ -136,6 +141,8 @@ ipcMain.handle('notes:create', () => {
   const now = Date.now();
   const entry = { id, title: 'Untitled Note', pinned: false, folder: '', tags: [], updatedAt: now };
   notesIndex.push(entry);
+  loadContentCache();
+  contentCache.set(id, '');
   fs.writeFileSync(notePath(id), '');
   saveIndex();
   return readonlyNote(entry);
@@ -145,9 +152,10 @@ ipcMain.handle('notes:save', (_event, id, content) => {
   const entry = notesIndex.find((n) => n.id === id);
   if (!entry) return false;
   fs.writeFileSync(notePath(id), content);
+  loadContentCache();
+  contentCache.set(id, content);
   const firstLine = content.split('\n').find((l) => l.trim().length > 0) || 'Untitled Note';
   entry.title = firstLine.replace(/^#+\s*/, '').trim().slice(0, 60) || 'Untitled Note';
-  entry.snippet = makeSnippet(content);
   entry.updatedAt = Date.now();
   saveIndex();
   return readonlyNote(entry);
@@ -214,6 +222,8 @@ ipcMain.handle('notes:delete', async (_event, id) => {
   });
   if (response !== 0) return false;
   notesIndex = notesIndex.filter((n) => n.id !== id);
+  loadContentCache();
+  contentCache.delete(id);
   try {
     fs.unlinkSync(notePath(id));
   } catch (err) {}
@@ -231,9 +241,7 @@ ipcMain.handle('notes:search', (_event, query) => {
   const re = new RegExp(escapeRegExp(q), 'g');
   const results = [];
   for (const n of notesIndex) {
-    let content = '';
-    const file = notePath(n.id);
-    if (fs.existsSync(file)) content = fs.readFileSync(file, 'utf8');
+    const content = readNoteContent(n.id);
     const matches = (n.title.toLowerCase() + '\n' + content.toLowerCase()).match(re);
     if (matches && matches.length > 0) {
       results.push({ id: n.id, matches: matches.length });
@@ -249,101 +257,6 @@ const EXPORT_META = {
   pdf: { name: 'PDF', ext: 'pdf' }
 };
 
-function escapeHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function inlineMd(str) {
-  return str
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" rel="noopener">$1</a>');
-}
-
-function renderMarkdownHtml(src) {
-  const lines = src.split('\n');
-  let html = '';
-  let listType = null;
-  let pre = null;
-
-  const closePre = () => {
-    if (pre !== null) {
-      html += '</pre></code>\n';
-      pre = null;
-    }
-  };
-  const closeList = () => {
-    if (listType) {
-      html += `</${listType}>\n`;
-      listType = null;
-    }
-  };
-
-  for (const raw of lines) {
-    const line = raw.replace(/\s+$/, '');
-
-    if (line.startsWith('```')) {
-      if (pre === null) {
-        closeList();
-        pre = line.slice(3).trim() || 'text';
-        html += '<pre><code>';
-        continue;
-      } else {
-        closePre();
-        continue;
-      }
-    }
-    if (pre !== null) {
-      html += escapeHtml(line) + '\n';
-      continue;
-    }
-
-    const heading = line.match(/^(#{1,4})\s+(.*)/);
-    if (heading) {
-      closeList();
-      const lvl = heading[1].length;
-      html += `<h${lvl}>${inlineMd(escapeHtml(heading[2]))}</h${lvl}>\n`;
-      continue;
-    }
-    if (/^\s*([-*+]|\d+\.)\s+/.test(line)) {
-      const isOl = /^\s*\d+\./.test(line);
-      const wanted = isOl ? 'ol' : 'ul';
-      if (listType !== wanted) {
-        closeList();
-        listType = wanted;
-        html += `<${wanted}>\n`;
-      }
-      html += `<li>${inlineMd(escapeHtml(line.replace(/^\s*([-*+]|\d+\.)\s+/, '')))}</li>\n`;
-      continue;
-    }
-    closeList();
-
-    if (line.trim() === '') {
-      html += '</p>\n';
-      continue;
-    }
-    if (line.trim() === '---' || line.trim() === '***') {
-      html += '<hr>\n';
-      continue;
-    }
-    const quote = line.match(/^>\s?(.*)/);
-    if (quote) {
-      html += `<blockquote>${inlineMd(escapeHtml(quote[1]))}</blockquote>\n`;
-      continue;
-    }
-    html += `<p>${inlineMd(escapeHtml(line))}</p>\n`;
-  }
-  closePre();
-  closeList();
-  if (!html.trim()) return '<p><em>Empty note</em></p>';
-  return html;
-}
-
 function htmlDoc(title, bodyHtml) {
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
@@ -352,6 +265,8 @@ function htmlDoc(title, bodyHtml) {
   h1, h2, h3, h4 { color: #4c3fd1; margin: 1.2rem 0 0.4rem; }
   p { margin: 0.5rem 0; }
   ul, ol { margin: 0.5rem 0 0.5rem 1.5rem; }
+  li.task { list-style: none; margin-left: -1.2rem; }
+  li.task input { margin-right: 0.45rem; transform: translateY(1px); }
   code { background: #f0f1f6; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.88em; }
   pre { background: #f0f1f6; border: 1px solid #e0e2ec; padding: 0.9rem; border-radius: 8px; overflow-x: auto; }
   pre code { background: none; padding: 0; }
@@ -393,9 +308,9 @@ ipcMain.handle('notes:export', async (_event, id, format) => {
   const content = fs.existsSync(notePath(id)) ? fs.readFileSync(notePath(id), 'utf8') : '';
   let data;
   if (format === 'pdf') {
-    data = await renderPdfBuffer(htmlDoc(entry.title, renderMarkdownHtml(content)));
+    data = await renderPdfBuffer(htmlDoc(entry.title, renderMarkdown(content)));
   } else if (format === 'html') {
-    data = htmlDoc(entry.title, renderMarkdownHtml(content));
+    data = htmlDoc(entry.title, renderMarkdown(content));
   } else {
     data = content;
   }
